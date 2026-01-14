@@ -27,7 +27,7 @@ class TradingBot:
         self.OANDA_ID = os.getenv("OANDA_ID")
         self.PO_SSID = os.getenv("PO_SSID")
         self.SESSION_START_HOUR = int(os.getenv("SESSION_START_HOUR", 13))
-        self.SESSION_END_HOUR = int(os.getenv("SESSION_END_HOUR", 19))
+        self.SESSION_END_HOUR = int(os.getenv("SESSION_END_HOUR", 21))
         self.DEMO_MODE = True
         
         # Strategy Settings
@@ -143,28 +143,14 @@ class TradingBot:
         return df
 
     def add_pivots(self, df):
-        # Optimization: Vectorized Rolling Window for Pivots
-        # Pivot Logic: High[i] is greater than previous 10 and next 10 highs
-        
-        # We need to look ahead, so we cannot know the pivot status of the *very last* candle fully
-        # without 10 future candles. BUT, the original code looked at the dataframe as is.
-        # If 'l+n2 >= len(df1)' it returned 0. So the last 10 candles are NEVER pivots.
-        
+
         n_left = 10
         n_right = 10
         window = n_left + n_right + 1
-        
-        # Rolling Max/Min (Shifted to align center)
-        # shift(-n_right) to align the window so that the value at 'i' compares to [i-10...i...i+10]
-        # But standard rolling with center=True handles the window placement.
-        # We must simply check equality.
-        
+
         roll_high = df['high'].rolling(window=window, center=True).max()
         roll_low = df['low'].rolling(window=window, center=True).min()
-        
-        # The rolling result at index 'i' is the max of [i-10 ... i+10]
-        # If df['high'][i] == roll_high[i], it is a local max.
-        
+
         df['is_high'] = (df['high'] == roll_high)
         df['is_low'] = (df['low'] == roll_low)
         
@@ -175,8 +161,6 @@ class TradingBot:
             if row['is_low']: return 1
             return 0
             
-        # Optimization: Only compute necessary rows or just vector addition
-        # Doing vector math is faster than apply
         df['pivot'] = 0
         df.loc[df['is_low'], 'pivot'] = 1
         df.loc[df['is_high'], 'pivot'] = 2
@@ -271,7 +255,9 @@ class TradingBot:
 
             trade_id = result[1]
             time.sleep(self.EXPIRATION)
-            win_status = self.api.check_win(trade_id)
+            # Check win returns a tuple (bool, status) e.g. (True, 'win')
+            result = self.api.check_win(trade_id)
+            win_status = result[1] if isinstance(result, tuple) and len(result) > 1 else result
             
             if win_status == 'win':
                 log(f"💰 WIN (Level {level})", "INFO")
@@ -280,7 +266,7 @@ class TradingBot:
                 log(f"💸 LOSS (Level {level})", "INFO")
                 amount *= 2 # Martingale
             else:
-                log("❓ Unknown Result", "WARNING")
+                log(f"❓ Unknown Result: {result}", "WARNING")
                 return
 
     def wait_for_data(self):
