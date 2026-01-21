@@ -26,8 +26,8 @@ class TradingBot:
         self.OANDA_TOKEN = os.getenv("OANDA_TOKEN")
         self.OANDA_ID = os.getenv("OANDA_ID")
         self.PO_SSID = os.getenv("PO_SSID")
-        self.SESSION_START_HOUR = int(os.getenv("SESSION_START_HOUR", 13))
-        self.SESSION_END_HOUR = int(os.getenv("SESSION_END_HOUR", 21))
+        self.SESSION_START_HOUR = int(os.getenv("SESSION_START_HOUR", 14))
+        self.SESSION_END_HOUR = int(os.getenv("SESSION_END_HOUR", 19))
         self.DEMO_MODE = True
         
         # Strategy Settings
@@ -352,3 +352,4 @@ class TradingBot:
 if __name__ == "__main__":
     bot = TradingBot()
     bot.run()
+
