@@ -28,8 +28,8 @@ class TradingBot:
         self.PO_SSID = os.getenv("PO_SSID")
         self.SESSION_START_HOUR = int(os.getenv("SESSION_START_HOUR", 14))
         self.SESSION_END_HOUR = int(os.getenv("SESSION_END_HOUR", 19))
-        self.DEMO_MODE = True
-        
+        self.DEMO_MODE = False
+                
         # Strategy Settings
         self.MIN_PAYOUT = 80
         self.PERIOD = 300
@@ -352,4 +352,5 @@ class TradingBot:
 if __name__ == "__main__":
     bot = TradingBot()
     bot.run()
+
 
