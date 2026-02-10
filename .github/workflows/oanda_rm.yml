@@ -1,12 +1,12 @@
-name: i_anda_xg
+name: Suit
 
 on:
   workflow_dispatch:    # Manual run
-  schedule:             # Automatic daily run at 13:40 EAT (10:40 UTC)
-    - cron: "40 10 * * *"
+  schedule:             # Automatic re-run every 6 hours
+    - cron: "0 */6 * * *"  # At minute 0, every 6th hour
 
 concurrency:
-  group: i_anda_xg
+  group: Suit
   cancel-in-progress: true
 
 jobs:
@@ -36,4 +36,4 @@ jobs:
         OANDA_ID: ${{ secrets.OANDA_ID }}
         PO_SSID: ${{ secrets.PO_SSID }}
       run: |
-        python main_xg.py
+        python main_rm2.py
