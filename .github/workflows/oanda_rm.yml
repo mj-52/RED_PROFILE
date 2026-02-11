@@ -3,7 +3,7 @@ name: Suit
 on:
   workflow_dispatch:    # Manual run
   schedule:             # Automatic re-run every 6 hours
-    - cron: "0 */6 * * *"  # At minute 0, every 6th hour
+    - cron: "50 10 * * *"  # At 10:50 UTC (13:50 EAT) daily
 
 concurrency:
   group: Suit
