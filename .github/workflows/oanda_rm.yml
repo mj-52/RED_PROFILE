@@ -36,4 +36,4 @@ jobs:
         OANDA_ID: ${{ secrets.OANDA_ID }}
         PO_SSID: ${{ secrets.PO_SSID }}
       run: |
-        python main_rm2.py
+        python main_rm.py
